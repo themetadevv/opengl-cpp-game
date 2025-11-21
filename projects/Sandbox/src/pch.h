@@ -1,0 +1,18 @@
+#pragma once
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <unordered_set>
+#include <functional>
+#include <algorithm>
+#include <vector>
+#include <ctime>
+#include <iomanip>
+#include <format>
+#include <chrono>
+#include <filesystem>

@@ -1,0 +1,12 @@
+[submodule "projects/libs/Glad"]
+	path = projects/libs/Glad
+	url = https://github.com/themetadevv/Glad
+[submodule "projects/libs/GLFW"]
+	path = projects/libs/GLFW
+	url = https://github.com/themetadevv/glfw
+[submodule "projects/libs/ImGui"]
+	path = projects/libs/ImGui
+	url = https://github.com/themetadevv/imgui
+[submodule "projects/libs/glm"]
+	path = projects/libs/glm
+	url = https://github.com/g-truc/glm
