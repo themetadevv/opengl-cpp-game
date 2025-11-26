@@ -15,3 +15,9 @@
 #else
 #define CORE_ASSERT(X)
 #endif
+
+#ifdef PLATFORM_WINDOWS 
+	#define PLATFORM "Windows"
+#else
+#define PLATFORM "Unknown"
+#endif

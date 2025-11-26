@@ -18,6 +18,8 @@ namespace Platform::Windows {
 		Core::NativeWindowHandle GetWindowHandle() const override;
 		bool Running() const override;
 
-		void OnUpdate(const glm::vec4& clear_color) override;
+		void ClearScreen(const glm::vec4& clear_color) const override;
+
+		void OnUpdate() override;
 	};
 }

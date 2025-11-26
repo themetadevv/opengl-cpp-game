@@ -40,6 +40,7 @@ project "Sandbox"
 
     includedirs {
         "projects/Sandbox/src",
+        "projects/Sandbox/vendor",
         "%{external_dependencies.GLFW}",
         "%{external_dependencies.Glad}",
         "%{external_dependencies.ImGui}",

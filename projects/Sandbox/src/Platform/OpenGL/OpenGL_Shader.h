@@ -1,8 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
-
 namespace Platform::OpenGL {
 	enum struct ShaderType {
 		NONE = -1,
@@ -35,6 +32,9 @@ namespace Platform::OpenGL {
 		const ShaderData& GetShaderData() const {
 			return m_ShaderData;
 		}
+
+		void Bind() const;
+		void Unbind() const;
 
 		void SetUniform1i(const std::string& name, int value);
 		void SetUniform1f(const std::string& name, float value);

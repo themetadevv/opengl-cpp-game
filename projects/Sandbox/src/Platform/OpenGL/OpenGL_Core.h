@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/Core.h"
-
 #include <glad/glad.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 void GLClearErrors();
 const char* GLGetErrorEnumName(GLenum error_code);

@@ -1,12 +1,8 @@
 #pragma once
 
-#include "pch.h"
-#include "Core.h"
-
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 #include <glm/glm.hpp>
-
 
 namespace Core {
 	struct WindowData {
@@ -34,7 +30,8 @@ namespace Core {
 		virtual NativeWindowHandle GetWindowHandle() const = 0;
 		virtual bool Running() const = 0;
 
-		virtual void OnUpdate(const glm::vec4& clear_color) = 0;
+		virtual void ClearScreen(const glm::vec4& clear_color) const = 0;
+		virtual void OnUpdate() = 0;
 
 		static IWindow* CreateWindow(const WindowData& window_data);
 	};

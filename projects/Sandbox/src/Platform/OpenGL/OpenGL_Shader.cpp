@@ -123,6 +123,15 @@ namespace Platform::OpenGL {
 		GLCall(glDeleteProgram(m_RendererID));
 	}
 
+
+	void Shader::Bind() const {
+		GLCall(glUseProgram(m_RendererID));
+	}
+
+	void Shader::Unbind() const {
+		GLCall(glUseProgram(NULL));
+	}
+
 	void Shader::SetUniform1i(const std::string& name, int value) {
 		GLCall(glUniform1i(GetCachedUniformLocation(name), value));
 	}

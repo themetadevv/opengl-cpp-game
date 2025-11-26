@@ -2,8 +2,7 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include <glad/glad.h>
-
+#include "Platform/OpenGL/OpenGL_Core.h"
 
 #include "WindowsWindow.h"
 
@@ -46,13 +45,16 @@ namespace Platform::Windows {
 		return m_WindowRunning;
 	}
 
-	void Window::OnUpdate(const glm::vec4& clear_color) {
-		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+	void Window::OnUpdate() {
 		m_WindowRunning = !glfwWindowShouldClose(m_Window);
 	
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
+
+	void Window::ClearScreen(const glm::vec4& clear_color) const {
+		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
 }

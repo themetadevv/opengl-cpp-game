@@ -1,8 +1,10 @@
 
 #include "pch.h"
-#include "Window.h"
+#include "Core.h"
 
 #include "Platform/Windows/WindowsWindow.h"
+
+#include "Window.h"
 
 namespace Core {
 	IWindow* IWindow::CreateWindow(const WindowData& window_data) {
