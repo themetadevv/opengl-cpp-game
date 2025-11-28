@@ -26,7 +26,6 @@ namespace Core {
 	public:
 		virtual ~IWindow() {}
 
-		virtual void ClearScreen(const glm::vec4& clear_color) const = 0;
 		virtual void OnUpdate() = 0;
 
 		virtual const WindowData& GetWindowData() const = 0;

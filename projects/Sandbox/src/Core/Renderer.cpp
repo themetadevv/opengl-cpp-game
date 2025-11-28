@@ -3,6 +3,8 @@
 #include "Core/Core.h"
 
 #include "Platform/OpenGL/OpenGL_Core.h"
+#include "Platform/OpenGL/OpenGL_Shader.h"
+#include "Platform/OpenGL/OpenGL_Texture.h"
 #include "Platform/OpenGL/Buffers/IndexBuffer.h"
 #include "Platform/OpenGL/Buffers/VertexArray.h"
 #include "Platform/OpenGL/Buffers/VertexBuffer.h"

@@ -13,8 +13,6 @@ namespace Platform::Windows {
 
 	public:
 		Window(const Core::WindowData& window_data);
-
-		void ClearScreen(const glm::vec4& clear_color) const override;
 		void OnUpdate() override;
 
 		const Core::WindowData& GetWindowData() const override {

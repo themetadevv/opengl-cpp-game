@@ -31,3 +31,5 @@
 #else
 #define RENDERING_API_NONE
 #endif
+
+#define unique(T, ...) std::make_unique<T>(__VA_ARGS__)
