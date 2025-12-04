@@ -11,6 +11,8 @@
 #include "Platform/OpenGL/Renderer/Texture2D.h"
 #include "Platform/OpenGL/Renderer/Renderer.h"
 
-#include "Platform/OpenGL/ResourceManager.h"
+#include "Platform/OpenGL/Renderer/Mesh.h"
+#include "Platform/OpenGL/Meshes/Quad.h"
+#include "Platform/OpenGL/Meshes/Triangle.h"
 
 #include "Maths.h"

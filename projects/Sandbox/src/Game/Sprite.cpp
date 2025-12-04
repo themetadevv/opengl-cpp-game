@@ -1,53 +1,23 @@
 
 #include "pch.h"
+#include "Core/Core.h"
 
-#include "Platform/OpenGL/OpenGL.h"
-
-#include "Game.h"
 #include "Sprite.h"
 
 namespace Game {
-	Sprite::Sprite(const std::string& name, Platform::OpenGL::Renderer* renderer, Platform::OpenGL::ResourceManager* resource_manager) :
-		m_Renderer(renderer), m_ResourceManager(resource_manager)
+	Sprite::Sprite(const std::string& name, Platform::OpenGL::Renderer* renderer) :
+		m_Renderer(renderer)
 	{
 		m_SpriteData.Name = name;
-		m_SpriteData.SpriteShader = nullptr;
-		m_SpriteData.SpriteTexture = nullptr;
+		m_SpriteData.Shader = nullptr;
+		m_SpriteData.Texture = nullptr;
 		m_SpriteData.Color = Vector3(1.0f);
-
-		float vertices[] = {
-			0.0f, 0.0f, 0.0f, 0.0f,
-			1.0f, 0.0f, 1.0f, 0.0f,
-			1.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f
-		};
-
-		unsigned int indices[] = {
-			0, 3, 2,
-			2, 1, 0
-		};
-
-		Platform::OpenGL::Buffer::VertexBufferLayout QuadVBL;
-		QuadVBL.Push<float>(2);
-		QuadVBL.Push<float>(2);
-
-		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO);
-		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::VertexBuffer>(ShaderConst::QUAD_VBO, sizeof(float) * 4 * 4, vertices);
-
-		m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO)->AddDataToBuffer(
-			*m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexBuffer>(ShaderConst::QUAD_VBO), 
-			QuadVBL
-		);
-
-		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::IndexBuffer>(ShaderConst::QUAD_IBO, 3U * 2U, indices);
-
-		m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO)->Unbind();
-		m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexBuffer>(ShaderConst::QUAD_VBO)->Unbind();
+		m_SpriteData.Mesh = nullptr;
 	}
 
 	bool Sprite::SetShader(Platform::OpenGL::Shader* shader) {
-		if (m_SpriteData.SpriteShader != shader) {
-			m_SpriteData.SpriteShader = shader;
+		if (m_SpriteData.Shader != shader) {
+			m_SpriteData.Shader = shader;
 			return true;
 		}
 		
@@ -56,8 +26,8 @@ namespace Game {
 	}
 
 	bool Sprite::SetTexture(Platform::OpenGL::Texture2D* texture) {
-		if (m_SpriteData.SpriteTexture != texture) {
-			m_SpriteData.SpriteTexture = texture;
+		if (m_SpriteData.Texture != texture) {
+			m_SpriteData.Texture = texture;
 			return true;
 		}
 
@@ -65,41 +35,60 @@ namespace Game {
 		return false;
 	}
 
+	bool Sprite::SetMesh(Platform::OpenGL::IMesh* mesh) {
+		if (m_SpriteData.Mesh != mesh) {
+			m_SpriteData.Mesh = mesh;
+			return true;
+		}
+
+		std::cout << "Same Mesh was Set Again!\n";
+		return false;
+	}
+
 	void Sprite::SetSize(const Vector2& size) {
-		m_SpriteData.SpriteTransform2D.Size = size;
+		m_SpriteData.Transform.Size = size;
 	}
 
 	void Sprite::SetPosition(const Vector2& position) {
-		m_SpriteData.SpriteTransform2D.Position = position;
+		m_SpriteData.Transform.Position = position;
 	}
 
 	void Sprite::SetRotation(const float& rot) {
-		m_SpriteData.SpriteTransform2D.Rotation = rot;
+		m_SpriteData.Transform.Rotation = rot;
 	}
 
 	void Sprite::SetColor(const Vector3& val) {
 		m_SpriteData.Color = val;
 	}
 
-	void Sprite::Draw(const Mat4& view, const Mat4& projection) {
-		m_SpriteData.SpriteShader->Bind();
+	void Sprite::SetMVP(const Mat4& view, const Mat4& projection) {
+		m_SpriteData.Shader->Bind();
+		Mat4 u_MVP = projection * view * m_SpriteData.Transform.GetModelMatrix();
+		m_SpriteData.Shader->SetUniformMat4(ShaderConst::UMVP, u_MVP);
+		m_SpriteData.Shader->Unbind();
+	}
+
+	void Sprite::Draw() {
+		m_SpriteData.Shader->Bind();
 		
-		Mat4 u_MVP = projection * view * m_SpriteData.SpriteTransform2D.GetModelMatrix();
-		m_SpriteData.SpriteShader->SetUniformMat4(ShaderConst::UMVP, u_MVP);
+		bool texture_attached = (m_SpriteData.Texture != nullptr);
 
-		bool texture_attached = (m_SpriteData.SpriteTexture != nullptr);
+		m_SpriteData.Shader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
+		m_SpriteData.Shader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.Color, 1.0f });
 
-		m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
-		m_SpriteData.SpriteShader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.Color, 0.1f });
-
-		if (m_SpriteData.SpriteTexture != nullptr) {
-			m_SpriteData.SpriteTexture->Bind(0);
-			m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX, 0);
+		if (m_SpriteData.Texture != nullptr) {
+			m_SpriteData.Texture->Bind(0);
+			m_SpriteData.Shader->SetUniform1i(ShaderConst::UTEX, 0);
 		}
 
-		m_Renderer->DrawIndexed(
-			m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO),
-			m_ResourceManager->GetResource<Platform::OpenGL::Buffer::IndexBuffer>(ShaderConst::QUAD_IBO)
-		);
+		if (m_SpriteData.Mesh->GetMeshType() == Platform::OpenGL::MeshType::Quad) {
+			m_Renderer->DrawIndexed(
+				m_SpriteData.Mesh->GetVAO(),
+				m_SpriteData.Mesh->GetIBO()
+			);
+		}
+		else if (m_SpriteData.Mesh->GetMeshType() == Platform::OpenGL::MeshType::Triangle) {
+			m_Renderer->DrawArray(m_SpriteData.Mesh->GetVAO());
+		}
 	}
 }

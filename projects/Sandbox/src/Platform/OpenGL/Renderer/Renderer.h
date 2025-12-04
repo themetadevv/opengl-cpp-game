@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Platform/OpenGL/ResourceManager.h"
+#include "Platform/OpenGL/Buffers/VertexArray.h"
 #include "Platform/OpenGL/Buffers/VertexBuffer.h"
+#include "Platform/OpenGL/Buffers/IndexBuffer.h"
 
 namespace Platform::OpenGL {
 	class Renderer {

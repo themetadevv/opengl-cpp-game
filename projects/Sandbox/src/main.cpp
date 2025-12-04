@@ -4,74 +4,61 @@
 #include "Core/Core.h"
 #include "Core/Window.h"
 
-#include "Platform/OpenGL/OpenGL.h"
+#include "Platform/Windows/WindowsWindow.h"
 
-#include "Game/Game.h"
+#include "Game/Level.h"
 #include "Game/Sprite.h"
+#include "Game/ResManager.h"
+#include "Game/Time.h"
 
-float vertices[] = {
-			0.0f, 0.0f, 0.0f, 0.0f,
-			1.0f, 0.0f, 1.0f, 0.0f,
-			1.0f, 1.0f, 1.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f
-};
-
-unsigned int indices[] = {
-	0, 3, 2,
-	2, 1, 0
-};
-
+// test program
 int main() {
 	using namespace Platform::OpenGL;
 
-	std::unique_ptr<Renderer> m_Renderer = unique(Renderer);
-	//Renderer* m_Renderer = new Renderer();
-	std::unique_ptr<ResourceManager> m_ResourceManager = unique(ResourceManager);
-	//ResourceManager* m_ResourceManager = new ResourceManager();
+	Core::WindowData Specs;
+	Specs.Title = "Platform - " + std::string(PLATFORM) + " API - OpenGL\n";
+	Specs.Width = 1600;
+	Specs.Height = 900;
+	Specs.VSync = true;
 
-	Core::WindowData m_WindowData;
-	m_WindowData.Title = "Platform - " + std::string(PLATFORM) + " API - OpenGL\n";
-	m_WindowData.VSync  = true;
-	m_WindowData.Width  = 1366;
-	m_WindowData.Height = 768;
+	auto& time = Game::Time::GetTime();
 
-	std::unique_ptr<Core::IWindow> m_Window = std::unique_ptr<Core::IWindow>(Core::IWindow::CreateWindow(m_WindowData));
+	Core::IWindow* window = new Platform::Windows::Window(Specs);
+	Renderer* renderer = new Renderer();
+
+	IMesh* mesh = new Mesh::Quad();
+	Shader* mesh_shader = new Shader("MeshShader.GLSL", "assets/MeshShader.GLSL");
+
+	Texture2D* bird_texture = new Texture2D("BirdTexture", "assets/bird.png");
+	Game::Sprite* bird_sprite = new Game::Sprite("Bird", renderer);
 	
-	m_ResourceManager->CreateResource<Shader>("SpriteShader", "C:/shaders/sprite_shader.glsl");
-	auto SpriteShader = m_ResourceManager->GetResource<Shader>("SpriteShader");
+	bird_sprite->SetMesh(mesh);
+	bird_sprite->SetShader(mesh_shader);
+	bird_sprite->SetTexture(bird_texture);
 
-	m_ResourceManager->CreateResource<Texture2D>("QuadTexture0", "C:/shaders/babee.png");
-	m_ResourceManager->CreateResource<Texture2D>("QuadTexture1", "C:/shaders/babee_2.png");
-	m_ResourceManager->CreateResource<Texture2D>("QuadTexture2", "C:/shaders/babee_3.png");
-	auto QuadTexture0 = m_ResourceManager->GetResource<Texture2D>("QuadTexture0");
-	auto QuadTexture1 = m_ResourceManager->GetResource<Texture2D>("QuadTexture1");
-	auto QuadTexture2 = m_ResourceManager->GetResource<Texture2D>("QuadTexture2");
+	Mat4 view_matrix(1.0f);
+	view_matrix = glm::translate(view_matrix, Vector3(300.0f, 150.0f, 0.0f));
 
+	Mat4 projection_matrix(1.0f);
+	projection_matrix = glm::ortho(0.0f, 1366.0f, 0.0f, 768.0f, -1.0f, 1.0f);
 
-	Game::Sprite* m_Sprite = new Game::Sprite("Test", m_Renderer.get(), m_ResourceManager.get());
-	m_Sprite->SetShader(SpriteShader);
-	m_Sprite->SetTexture(QuadTexture2);
-	
-	Mat4 view = Mat4(1.0f);
-	view = glm::translate(view, Vector3(300.0f, 150.0f, 0.0f));
+	while (window->Running()) {
+		renderer->Clear({ 0.3f, 0.2f, 0.3f, 1.0f });
+		time.Update();
 
-	Mat4 projection = Mat4(1.0f);
-	projection = glm::ortho(0.0f, 1366.0f, 0.0f, 768.0f, -1.0f, 1.0f);
-	
-	float x_val = 400.0f;
+		bird_sprite->SetPosition({ 100.0f, 50.0f });
+		bird_sprite->SetSize({ 50.0f, 50.0f });
+		bird_sprite->SetMVP(view_matrix, projection_matrix);
 
-	while (m_Window->Running()) {
-		m_Renderer->Clear({ 0.3f, 0.3f, 0.3f, 1.0f });
+		bird_sprite->Draw();
 
-		x_val -= 1.0f;
-
-		m_Sprite->SetPosition({ x_val, 50.0f });
-		m_Sprite->SetRotation(0.0f);
-		m_Sprite->SetSize({ 347.0f, 484.0f });
-		m_Sprite->SetColor(Vector3(1.f, 0.0f, 0.0f));
-
-		m_Sprite->Draw(view, projection);
-
-		m_Window->OnUpdate();
+		window->OnUpdate();
 	}
+
+	delete window;
+	delete renderer;
+	delete mesh;
+	delete mesh_shader;
+	delete bird_texture;
+	delete bird_sprite;
 }

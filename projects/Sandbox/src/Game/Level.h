@@ -3,7 +3,7 @@
 
 
 namespace Game {
-	class Game {
+	class Level {
 	public:
 		virtual void Initialize() = 0;
 

@@ -7,10 +7,6 @@ namespace ShaderConst {
 	constexpr char UCOLOR[] = "u_Color";
 	constexpr char UTEX[] = "u_Texture";
 	constexpr char UTEX_ATTACHED[] = "u_TextureAttached";
-
-	constexpr char QUAD_VAO[] = "QuadVAO";
-	constexpr char QUAD_VBO[] = "QuadVBO";
-	constexpr char QUAD_IBO[] = "QuadIBO";
 }
 
 namespace Platform::OpenGL {

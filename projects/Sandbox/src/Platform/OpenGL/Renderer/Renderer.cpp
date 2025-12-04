@@ -19,7 +19,13 @@ namespace Platform::OpenGL {
 	}
 
 	void Renderer::Initialize() {
-		
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		std::cout << "Renderer Initialized:\n";
+		std::cout << "Vendor:   " << glGetString(GL_VENDOR) << "\n";
+		std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
+		std::cout << "Version:  " << glGetString(GL_VERSION) << "\n";
 	}
 
 	void Renderer::Shutdown() {
@@ -31,11 +37,10 @@ namespace Platform::OpenGL {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));
 	}
 
-
 	void Renderer::DrawArray(Buffer::VertexArray* vao) {
-		
+		vao->Bind();
+		GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
 	}
-
 
 	void Renderer::DrawIndexed(Buffer::VertexArray* vao, Buffer::IndexBuffer* ibo) {
 		vao->Bind();

@@ -1,22 +1,18 @@
 #pragma once
 
-#include "Platform/OpenGL/Buffers/IndexBuffer.h"
-#include "Platform/OpenGL/Buffers/VertexArray.h"
-#include "Platform/OpenGL/Buffers/VertexBuffer.h"
-#include "Platform/OpenGL/Buffers/VertexBufferLayout.h"
-#include "Platform/OpenGL/Renderer/Shader.h"
-#include "Platform/OpenGL/Renderer/Texture2D.h"
+#include "Platform/OpenGL/OpenGL.h"
+#include "Game/Sprite.h"
 
-namespace Platform::OpenGL {
+namespace Game {
 	class ResourceManager {
 	private:
-		std::unordered_map<std::string, std::unique_ptr<Shader>>    m_Shaders;
-		std::unordered_map<std::string, std::unique_ptr<Texture2D>> m_Textures2D;
+		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Shader>>    m_Shaders;
+		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Texture2D>> m_Textures2D;
 
-		std::unordered_map<std::string, std::unique_ptr<Buffer::VertexBuffer>> m_VertexBuffers;
-		std::unordered_map<std::string, std::unique_ptr<Buffer::IndexBuffer>>  m_IndexBuffers;
-		std::unordered_map<std::string, std::unique_ptr<Buffer::VertexArray>>  m_VertexArray;
+		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Mesh::Quad>>      m_QuadMeshes;
+		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Mesh::Triangle>>  m_TriangleMeshes;
 
+		std::unordered_map<std::string, std::unique_ptr<Sprite>> m_Sprites;
 
 		template <typename T>
 		struct Resource {
@@ -25,7 +21,7 @@ namespace Platform::OpenGL {
 		};
 
 		template<>
-		struct Resource<Shader> {
+		struct Resource<Platform::OpenGL::Shader> {
 			static constexpr bool m_NameRequired = true;
 
 			static auto& Get(ResourceManager* rm) {
@@ -34,7 +30,7 @@ namespace Platform::OpenGL {
 		};
 
 		template<>
-		struct Resource<Texture2D> {
+		struct Resource<Platform::OpenGL::Texture2D> {
 			static constexpr bool m_NameRequired = true;
 
 			static auto& Get(ResourceManager* rm) {
@@ -43,29 +39,29 @@ namespace Platform::OpenGL {
 		};
 
 		template<>
-		struct Resource<Buffer::VertexArray> {
+		struct Resource<Platform::OpenGL::Mesh::Quad> {
 			static constexpr bool m_NameRequired = false;
 
 			static auto& Get(ResourceManager* rm) {
-				return rm->m_VertexArray;
+				return rm->m_QuadMeshes;
 			}
 		};
 
 		template<>
-		struct Resource<Buffer::VertexBuffer> {
+		struct Resource<Platform::OpenGL::Mesh::Triangle> {
 			static constexpr bool m_NameRequired = false;
 
 			static auto& Get(ResourceManager* rm) {
-				return rm->m_VertexBuffers;
+				return rm->m_TriangleMeshes;
 			}
 		};
 
 		template<>
-		struct Resource<Buffer::IndexBuffer> {
-			static constexpr bool m_NameRequired = false;
+		struct Resource<Sprite> {
+			static constexpr bool m_NameRequired = true;
 
 			static auto& Get(ResourceManager* rm) {
-				return rm->m_IndexBuffers;
+				return rm->m_Sprites;
 			}
 		};
 
@@ -89,7 +85,7 @@ namespace Platform::OpenGL {
 				map.emplace(resource_name, std::move(resource));
 			}
 			else {
-				std::cout << "Resource (Type : " << typeid(T).name() << ") -> " << resource_name << " Already exists! in Renderer" << "\n";
+				std::cout << "Resource (Type : " << typeid(T).name() << ") -> " << resource_name << " Already exists! in Resource Manager" << "\n";
 			}		
 		}
 
@@ -100,7 +96,7 @@ namespace Platform::OpenGL {
 			if (it != map.end())
 				return it->second.get();
 
-			std::cout << "Resource (Type : " << typeid(T).name() << ") -> " << resource_name << " Not Found! in Renderer\n";
+			std::cout << "Resource (Type : " << typeid(T).name() << ") -> " << resource_name << " Not Found! in Resource Manager\n";
 			return nullptr;
 		}
 	};
