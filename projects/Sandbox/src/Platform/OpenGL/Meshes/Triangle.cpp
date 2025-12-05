@@ -6,7 +6,7 @@
 
 namespace Platform::OpenGL::Mesh {
 	Triangle::Triangle() 
-		: m_MeshType(MeshType::Triangle)
+		: m_MeshType(MeshType::Triangle), m_MeshID(GenerateMeshID())
 	{
 		float vertices[] = {
 			// pos.x, pos.y, u, v

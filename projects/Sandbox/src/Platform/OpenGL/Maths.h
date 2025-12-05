@@ -47,3 +47,12 @@ struct Transform3D {
 		return model_matrix;
 	}
 };
+
+struct Color {
+	float R, G, B, A;
+
+	Color() : R (1.0f), G (1.0f), B (1.0f), A (1.0f) {}
+	Color(float V) : R (V / 255.0f), G (V / 255.0f), B (V / 255.0f), A (255.0f / 255.0f) {}
+	Color(float r, float g, float b) : R (r / 255.0f), G (g / 255.0f), B (b / 255.0f), A (255.0f / 255.0f) {}
+	Color(float r, float g, float b, float a) : R (r / 255.0f), G (g / 255.0f), B (b / 255.0f), A (a / 255.0f) {}
+};

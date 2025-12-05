@@ -32,7 +32,24 @@ inline bool CoreCheckError(bool condition, const char* error_msg, const char* co
 
 #define CORE_ASSERT(X, ...) if(!(CoreCheckError((X), __VA_ARGS__, #X, __FILE__, __LINE__))) { __debugbreak(); } 
 #else
-#define CORE_ASSERT(X) X
+#define CORE_ASSERT(X) X;
+#endif
+
+#ifdef ENABLE_LOGGING
+
+template<typename... Args>
+void Log(Args&&... args) {
+	std::cout << "[" << __TIME__ << "] -> ";
+	(std::cout << ... << args);
+	std::cout << '\n';
+}
+#else
+
+template<typename... Args>
+inline void Log(Args&&... args) {
+
+}
+
 #endif
 
 #ifdef PLATFORM_WINDOWS 

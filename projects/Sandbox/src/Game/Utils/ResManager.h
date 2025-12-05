@@ -85,7 +85,7 @@ namespace Game {
 				map.emplace(resource_name, std::move(resource));
 			}
 			else {
-				std::cout << "Resource (Type : " << typeid(T).name() << ") -> " << resource_name << " Already exists! in Resource Manager" << "\n";
+				Log("Resource (Type : ", typeid(T).name(), ") -> ", resource_name, " Already exists!");
 			}		
 		}
 
@@ -96,7 +96,7 @@ namespace Game {
 			if (it != map.end())
 				return it->second.get();
 
-			std::cout << "Resource (Type : " << typeid(T).name() << ") -> " << resource_name << " Not Found! in Resource Manager\n";
+			Log("Resource (Type : ", typeid(T).name(), ") -> ", resource_name, " Already exists!");
 			return nullptr;
 		}
 	};

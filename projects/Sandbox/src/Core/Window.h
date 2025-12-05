@@ -23,9 +23,11 @@ namespace Core {
 		virtual ~IWindow() {}
 
 		virtual void OnUpdate() = 0;
+		virtual void OnShutdown() = 0;
 
 		virtual const WindowData& GetWindowData() const = 0;
 		virtual const NativeWindowHandle& GetWindowHandle() const = 0;
+
 		virtual const bool& Running() const = 0;
 
 		static IWindow* CreateWindow(const WindowData& window_data);

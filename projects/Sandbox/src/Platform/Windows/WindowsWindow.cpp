@@ -24,6 +24,9 @@ namespace Platform::Windows {
 
 		int load_gl_loader_success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		CORE_ASSERT(load_gl_loader_success, "Failed to load 'glad GL Loader'!");
+
+		m_NativeWindowHandle.type = Core::NativeWindowHandle::Type::GLFW;
+		m_NativeWindowHandle.handle = static_cast<GLFWwindow*>(m_Window);
 	}
 
 	Window::Window(const Core::WindowData& window_data) :
@@ -37,6 +40,10 @@ namespace Platform::Windows {
 	
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
+	}
+
+	void Window::OnShutdown() {
+		glfwSetWindowShouldClose(m_Window, true);
 	}
 
 }

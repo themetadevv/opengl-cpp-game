@@ -3,13 +3,14 @@
 #include "pch.h"
 #include "Core/Core.h"
 #include "Core/Window.h"
+#include "Core/Time.h"
+#include "Core/Input.h"
 
 #include "Platform/Windows/WindowsWindow.h"
 
 #include "Game/Level.h"
 #include "Game/Sprite.h"
-#include "Game/ResManager.h"
-#include "Game/Time.h"
+#include "Game/Utils/ResManager.h"
 
 // test program
 int main() {
@@ -21,44 +22,86 @@ int main() {
 	Specs.Height = 900;
 	Specs.VSync = true;
 
-	auto& time = Game::Time::GetTime();
-
 	Core::IWindow* window = new Platform::Windows::Window(Specs);
 	Renderer* renderer = new Renderer();
 
-	IMesh* mesh = new Mesh::Quad();
+	Core::Input::Init(static_cast<GLFWwindow*>(window->GetWindowHandle().handle));
+	Core::Time::Init();
+
+	IMesh* quad_mesh = new Mesh::Quad();
+	IMesh* tri_mesh = new Mesh::Triangle();
+
 	Shader* mesh_shader = new Shader("MeshShader.GLSL", "assets/MeshShader.GLSL");
 
 	Texture2D* bird_texture = new Texture2D("BirdTexture", "assets/bird.png");
 	Game::Sprite* bird_sprite = new Game::Sprite("Bird", renderer);
-	
-	bird_sprite->SetMesh(mesh);
-	bird_sprite->SetShader(mesh_shader);
-	bird_sprite->SetTexture(bird_texture);
 
 	Mat4 view_matrix(1.0f);
 	view_matrix = glm::translate(view_matrix, Vector3(300.0f, 150.0f, 0.0f));
 
 	Mat4 projection_matrix(1.0f);
-	projection_matrix = glm::ortho(0.0f, 1366.0f, 0.0f, 768.0f, -1.0f, 1.0f);
+	projection_matrix = glm::ortho(0.0f, (float)window->GetWindowData().Width, 0.0f, (float)window->GetWindowData().Height, -1.0f, 1.0f);
+
+	bird_sprite->SetShader(mesh_shader);
+	bird_sprite->SetTexture(bird_texture);
+	bird_sprite->SetMesh(quad_mesh);
+
+	Vector2 birdpos(100.0f, 50.0f);
+	float gravity = -200.0f; // pixels per second squared
+	float jumpVelocity = 150.0f; // initial jump velocity
+	float birdVelocity = 0.0f;
 
 	while (window->Running()) {
-		renderer->Clear({ 0.3f, 0.2f, 0.3f, 1.0f });
-		time.Update();
+		renderer->Clear({ 0.3f,0.2f,0.3f,1.0f });
 
-		bird_sprite->SetPosition({ 100.0f, 50.0f });
-		bird_sprite->SetSize({ 50.0f, 50.0f });
+		bird_sprite->SetSize({ 50.0f,50.0f });
+
+		Color sprite_color = Color(255.0f);
+
+		if (Core::Input::IsKeyPressed(KeyCode::Escape))
+			window->OnShutdown();
+
+		if (Core::Input::IsKeyDown(KeyCode::W))
+			birdpos.y += 100.0f * Core::Time::GetDeltaTime();
+
+		if (Core::Input::IsKeyDown(KeyCode::S))
+			birdpos.y -= 100.0f * Core::Time::GetDeltaTime();
+
+		if (Core::Input::IsKeyDown(KeyCode::A))
+			birdpos.x -= 100.0f * Core::Time::GetDeltaTime();
+
+		if (Core::Input::IsKeyDown(KeyCode::D))
+			birdpos.x += 100.0f * Core::Time::GetDeltaTime();
+
+		if (Core::Input::IsKeyPressed(KeyCode::Space)) // jump once
+			birdVelocity = jumpVelocity;
+
+		if (Core::Input::IsMouseButtonDown(MouseCode::Left))
+			sprite_color = Color(255.0f, 0.0f, 0.0f);
+
+		if (Core::Input::IsMouseButtonReleased(MouseCode::Left))
+			sprite_color = Color(0.0f, 0.0f, 255.0f);
+
+		birdVelocity += gravity * Core::Time::GetDeltaTime(); // apply gravity
+		birdpos.y += birdVelocity * Core::Time::GetDeltaTime();
+
+		// draw
+		bird_sprite->SetPosition(birdpos);
+		bird_sprite->SetColor(sprite_color);
 		bird_sprite->SetMVP(view_matrix, projection_matrix);
-
 		bird_sprite->Draw();
 
+		Core::Input::Update();
+		Core::Time::Update();
 		window->OnUpdate();
 	}
 
 	delete window;
 	delete renderer;
-	delete mesh;
+	delete quad_mesh;
+	delete tri_mesh;
 	delete mesh_shader;
 	delete bird_texture;
 	delete bird_sprite;
+
 }

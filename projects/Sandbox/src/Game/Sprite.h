@@ -5,11 +5,19 @@
 namespace Game {
 	struct SpriteData {
 		std::string Name;
-		Platform::OpenGL::Shader* Shader;
+
+		Platform::OpenGL::Shader*    Shader;
 		Platform::OpenGL::Texture2D* Texture;
-		Vector3 Color;
+		Platform::OpenGL::IMesh*     Mesh;
+
+		Color SpriteColor;
 		Transform2D Transform;
-		Platform::OpenGL::IMesh* Mesh;
+		
+		SpriteData() :
+			Name("Defualt_Sprite"), Shader(nullptr),
+			Texture(nullptr), SpriteColor(),
+			Transform(), Mesh(nullptr)
+		{}
 	};
 
 	class Sprite {
@@ -20,6 +28,10 @@ namespace Game {
 	public:
 		Sprite(const std::string& name, Platform::OpenGL::Renderer* renderer);
 
+		void ClearShader();
+		void ClearTexture();
+		void ClearMesh();
+
 		bool SetShader(Platform::OpenGL::Shader* shader);
 		bool SetTexture(Platform::OpenGL::Texture2D* texture);
 		bool SetMesh(Platform::OpenGL::IMesh* mesh);
@@ -27,9 +39,17 @@ namespace Game {
 		void SetSize(const Vector2& size);
 		void SetPosition(const Vector2& position);
 		void SetRotation(const float& rot);
-		
-		void SetColor(const Vector3& val);
+		void SetColor(const Color& val);
+
 		void SetMVP(const Mat4& view, const Mat4& projection);
+
+		inline const Vector2& GetPosition() const {
+			return m_SpriteData.Transform.Position;
+		}
+
+		inline const float& GetRotation() const {
+			return m_SpriteData.Transform.Rotation;
+		}
 
 		inline const std::string& GetSpriteName() const {
 			return m_SpriteData.Name;

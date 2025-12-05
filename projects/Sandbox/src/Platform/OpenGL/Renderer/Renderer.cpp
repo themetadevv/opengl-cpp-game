@@ -22,7 +22,7 @@ namespace Platform::OpenGL {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		std::cout << "Renderer Initialized:\n";
+		std::cout << "Renderer Initialized ->\n";
 		std::cout << "Vendor:   " << glGetString(GL_VENDOR) << "\n";
 		std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
 		std::cout << "Version:  " << glGetString(GL_VERSION) << "\n";

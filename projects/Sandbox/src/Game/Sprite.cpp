@@ -9,9 +9,17 @@ namespace Game {
 		m_Renderer(renderer)
 	{
 		m_SpriteData.Name = name;
+	}
+
+	void Sprite::ClearShader() {
 		m_SpriteData.Shader = nullptr;
+	}
+
+	void Sprite::ClearTexture() {
 		m_SpriteData.Texture = nullptr;
-		m_SpriteData.Color = Vector3(1.0f);
+	}
+
+	void Sprite::ClearMesh() {
 		m_SpriteData.Mesh = nullptr;
 	}
 
@@ -21,7 +29,7 @@ namespace Game {
 			return true;
 		}
 		
-		std::cout << "Same Shader was Set Again!\n";
+		Log("Same Shader was Set Again!");
 		return false;
 	}
 
@@ -31,7 +39,7 @@ namespace Game {
 			return true;
 		}
 
-		std::cout << "Same Texture was Set Again!\n";
+		Log("Same Texture was Set Again!");
 		return false;
 	}
 
@@ -41,7 +49,7 @@ namespace Game {
 			return true;
 		}
 
-		std::cout << "Same Mesh was Set Again!\n";
+		Log("Same Mesh was Set Again!");
 		return false;
 	}
 
@@ -57,8 +65,8 @@ namespace Game {
 		m_SpriteData.Transform.Rotation = rot;
 	}
 
-	void Sprite::SetColor(const Vector3& val) {
-		m_SpriteData.Color = val;
+	void Sprite::SetColor(const Color& val) {
+		m_SpriteData.SpriteColor = val;
 	}
 
 	void Sprite::SetMVP(const Mat4& view, const Mat4& projection) {
@@ -74,7 +82,7 @@ namespace Game {
 		bool texture_attached = (m_SpriteData.Texture != nullptr);
 
 		m_SpriteData.Shader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
-		m_SpriteData.Shader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.Color, 1.0f });
+		m_SpriteData.Shader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.SpriteColor.R, m_SpriteData.SpriteColor.G, m_SpriteData.SpriteColor.B, m_SpriteData.SpriteColor.A });
 
 		if (m_SpriteData.Texture != nullptr) {
 			m_SpriteData.Texture->Bind(0);

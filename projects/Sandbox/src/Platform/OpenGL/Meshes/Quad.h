@@ -5,6 +5,7 @@
 namespace Platform::OpenGL::Mesh {
 	class Quad : public IMesh {
 	private:
+		uint32_t m_MeshID;
 		MeshType m_MeshType;
 		std::unique_ptr<Buffer::VertexArray>  m_VAO;
 		std::unique_ptr<Buffer::VertexBuffer> m_VBO;
@@ -15,6 +16,10 @@ namespace Platform::OpenGL::Mesh {
 
 		inline const MeshType& GetMeshType() const override {
 			return m_MeshType;
+		}
+
+		inline const uint32_t& GetMeshID() const override {
+			return m_MeshID;
 		}
 
 		inline Buffer::VertexArray* GetVAO() const override {

@@ -7,7 +7,7 @@
 
 namespace Platform::OpenGL::Mesh {
 	Quad::Quad() :
-		m_MeshType(MeshType::Quad)
+		m_MeshType(MeshType::Quad), m_MeshID(GenerateMeshID())
 	{
 		float vertices[] = {
 			0.0f, 0.0f, 0.0f, 0.0f,
