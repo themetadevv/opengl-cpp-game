@@ -10,9 +10,17 @@ namespace Platform::OpenGL {
 		void Initialize();
 		void Shutdown();
 
+		static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
+			GLCall(glViewport(0, 0, width, height));
+		}
+
 	public:
 		Renderer();
 		~Renderer();
+
+		void SetViewport(GLFWwindow* window_handle) const {
+			glfwSetFramebufferSizeCallback(window_handle, FramebufferSizeCallback);
+		}
 
 		void Clear(const glm::vec4& color);
 

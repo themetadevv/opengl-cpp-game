@@ -6,8 +6,6 @@
 #include "Core/Time.h"
 #include "Core/Input.h"
 
-#include "Platform/Windows/WindowsWindow.h"
-
 #include "Game/Level.h"
 #include "Game/Sprite.h"
 #include "Game/Utils/ResManager.h"
@@ -18,16 +16,22 @@
 int main() {
 	using namespace Platform::OpenGL;
 
-	Core::WindowData Specs;
+	Core::WindowSpecification Specs;
 	Specs.Title = "Platform - " + std::string(PLATFORM) + " API - OpenGL\n";
-	Specs.Width = 1600;
-	Specs.Height = 900;
+	Specs.Size.first = 1600;
+	Specs.Size.second = 900;
+	Specs.VidMode = Core::VideoMode::Windowed;
+	Specs.WinState = Core::WindowState::None;
 	Specs.VSync = true;
 
-	Core::IWindow* window = new Platform::Windows::Window(Specs);
+	std::cout << (uint32_t)Specs.WinState << '\n';
+
+	Core::Window* window = new Core::Window(Specs);
 	Renderer* renderer = new Renderer();
 
-	Core::Input::Init(static_cast<GLFWwindow*>(window->GetWindowHandle().handle));
+	renderer->SetViewport(window->GetWindowHandle());
+
+	Core::Input::Init(window->GetWindowHandle());
 	Core::Time::Init();
 
 	IMesh* quad_mesh = new Mesh::Quad();
@@ -42,7 +46,7 @@ int main() {
 	view_matrix = glm::translate(view_matrix, Vector3(300.0f, 150.0f, 0.0f));
 
 	Mat4 projection_matrix(1.0f);
-	projection_matrix = glm::ortho(0.0f, (float)window->GetWindowData().Width, 0.0f, (float)window->GetWindowData().Height, -1.0f, 1.0f);
+	projection_matrix = glm::ortho(0.0f, (float)window->GetWindowSize().first, 0.0f, (float)window->GetWindowSize().second, -1.0f, 1.0f);
 
 	bird_sprite->SetShader(mesh_shader);
 	bird_sprite->SetTexture(bird_texture);
@@ -66,7 +70,7 @@ int main() {
 		//std::cout << "Cursor Pos (X, Y) : " << cursor_pos.x << ", " << cursor_pos.y << '\n';
 
 		if (Core::Input::IsKeyPressed(KeyCode::Escape))
-			window->OnShutdown();
+			window->Shutdown();
 
 		if (Core::Input::IsKeyDown(KeyCode::W))
 			birdpos.y += 100.0f * (float)Core::Time::GetDeltaTime();
@@ -89,6 +93,20 @@ int main() {
 		if (Core::Input::IsMouseButtonReleased(MouseCode::Left))
 			sprite_color = Color(0.0f, 255.0f, 0.0f, 150.0f);
 
+		if (Core::Input::IsKeyPressed(KeyCode::F11)) {
+			window->SetVideoMode(Core::VideoMode::Fullscreen);
+		}
+			
+		if (Core::Input::IsKeyPressed(KeyCode::F10)) {
+			window->SetVideoMode(Core::VideoMode::Borderless);
+		}
+
+		if (Core::Input::IsKeyPressed(KeyCode::F9)) {
+			window->SetVideoMode(Core::VideoMode::Windowed);
+		}
+
+	//	Log("Width , Height : ", window->GetWindowSize().first, ", ", window->GetWindowSize().second);
+
 		birdVelocity += gravity * Core::Time::GetDeltaTime();
 		birdpos.y += birdVelocity * Core::Time::GetDeltaTime();
 
@@ -102,18 +120,11 @@ int main() {
 		float bottom = bird_sprite->GetPosition().y;
 		float top = bird_sprite->GetPosition().y + bird_sprite->GetSize().y;
 
-		float windowW = window->GetWindowData().Width;
-		float windowH = window->GetWindowData().Height;
-
-		if (right >= windowW || left <= 0.0f || bottom <= 0.0f || top >= windowH) {
-			std::cout << "Bird Died\n";
-		}
-
 		bird_sprite->Draw();
 
 		Core::Input::Update();
 		Core::Time::Update();
-		window->OnUpdate();
+		window->Update();
 	}
 
 	delete window;
