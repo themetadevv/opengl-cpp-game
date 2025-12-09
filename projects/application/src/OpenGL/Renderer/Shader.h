@@ -27,6 +27,8 @@ namespace OpenGL {
 		ShaderData m_ShaderData;
 		std::unordered_map<std::string, int> m_UniformCache;
 
+		bool m_ShaderBound;
+
 		const bool ParseShader(const std::string& shader_name, const std::string& shader_path);
 		const bool CompileShader();
 		const int GetCachedUniformLocation(const std::string& uniform_name);
@@ -40,8 +42,10 @@ namespace OpenGL {
 			return m_ShaderData;
 		}
 
-		void Bind() const;
-		void Unbind() const;
+		bool IsShaderBound() const { return m_ShaderBound; }
+
+		void Bind();
+		void Unbind();
 
 		void SetUniform1i(const std::string& name, int value);
 		void SetUniform1f(const std::string& name, float value);

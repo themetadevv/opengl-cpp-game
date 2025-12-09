@@ -5,14 +5,13 @@
 #include "Sprite.h"
 
 namespace Game {
-	Sprite::Sprite(const std::string& name, OpenGL::Renderer* renderer) :
-		m_Renderer(renderer)
+	Sprite::Sprite(const std::string& name)
 	{
 		m_SpriteData.Name = name;
 	}
 
 	void Sprite::ClearShader() {
-		m_SpriteData.Shader = nullptr;
+		m_SpriteData.SpriteShader = nullptr;
 	}
 
 	void Sprite::ClearTexture() {
@@ -24,8 +23,8 @@ namespace Game {
 	}
 
 	bool Sprite::SetShader(OpenGL::Shader* shader) {
-		if (m_SpriteData.Shader != shader) {
-			m_SpriteData.Shader = shader;
+		if (m_SpriteData.SpriteShader != shader) {
+			m_SpriteData.SpriteShader = shader;
 			return true;
 		}
 		
@@ -69,36 +68,32 @@ namespace Game {
 		m_SpriteData.SpriteColor = val;
 	}
 
-	void Sprite::SetMVP(const Mat4& view, const Mat4& projection) {
-		m_SpriteData.Shader->Bind();
-		Mat4 u_MVP = projection * view * m_SpriteData.Transform.GetModelMatrix();
-		m_SpriteData.Shader->SetUniformMat4(ShaderConst::UMVP, u_MVP);
-		m_SpriteData.Shader->Unbind();
-	}
-
-	void Sprite::Draw() {
-		m_SpriteData.Shader->Bind();
+	void Sprite::Draw(OpenGL::Renderer* r) {
+		m_SpriteData.SpriteShader->Bind();
 		
 		bool texture_attached = (m_SpriteData.Texture != nullptr);
 
-		m_SpriteData.Shader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
-		m_SpriteData.Shader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.SpriteColor.R, m_SpriteData.SpriteColor.G, m_SpriteData.SpriteColor.B, m_SpriteData.SpriteColor.A });
+		m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
+		m_SpriteData.SpriteShader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.SpriteColor.R, m_SpriteData.SpriteColor.G, m_SpriteData.SpriteColor.B, m_SpriteData.SpriteColor.A });
+
+		Mat4 u_MVP = r->GetProjectionMatrix() * r->GetViewMatrix() * m_SpriteData.Transform.GetModelMatrix();
+		m_SpriteData.SpriteShader->SetUniformMat4(ShaderConst::UMVP, u_MVP);
 
 		if (m_SpriteData.Texture != nullptr) {
 			m_SpriteData.Texture->OverrideBind(0);
-			m_SpriteData.Shader->SetUniform1i(ShaderConst::UTEX, 0);
+			m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX, 0);
 		}
 
 		if (m_SpriteData.Mesh->GetMeshType() == OpenGL::MeshType::Quad) {
-			m_Renderer->DrawIndexed(
+			r->DrawIndexed(
 				m_SpriteData.Mesh->GetVAO(),
 				m_SpriteData.Mesh->GetIBO()
 			);
 		}
 		else if (m_SpriteData.Mesh->GetMeshType() == OpenGL::MeshType::Triangle) {
-			m_Renderer->DrawArray(m_SpriteData.Mesh->GetVAO());
+			r->DrawArray(m_SpriteData.Mesh->GetVAO());
 		}
 
-		m_SpriteData.Shader->Unbind();
+		m_SpriteData.SpriteShader->Unbind();
 	}
 }

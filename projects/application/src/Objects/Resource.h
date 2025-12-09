@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OpenGL/OpenGL.h"
-#include "Game/Sprite.h"
+#include "Objects/Sprite.h"
 
 namespace Game {
 	class ResourceManager {

@@ -49,11 +49,18 @@ namespace Core {
 		// <------------------ Setters ------------------>
 
 		void SetFontSize(int size);
+		void SetFaceIndex(int index = 0);
+		
 
 		// <------------------ Getters ------------------>
 
+		FT_Library GetLibrary() {
+			return m_FTLibrary;
+		}
+
 		std::string GetFontName() const { return m_FontSpecification.Name; }
 		std::string GetFontPath() const { return m_FontSpecification.Path; }
+		FT_Face& GetFace() { return m_Face; }
 
 		int GetFontSize() const { return m_FontSpecification.Size; }
 		

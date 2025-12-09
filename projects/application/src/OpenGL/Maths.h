@@ -18,7 +18,7 @@ struct Transform2D {
 
 	Transform2D() : Size(0.0f), Position(0.0f), Rotation(0.0f) {}
 
-	Mat4 GetModelMatrix() {
+	Mat4 GetModelMatrix() const {
 		Mat4 model_matrix = Mat4(1.0f);
 		model_matrix = glm::translate(model_matrix, Vector3(Position, 0.0f));
 		model_matrix = glm::rotate(model_matrix, glm::radians(Rotation), Vector3(0.0f, 0.0f, 1.0f));

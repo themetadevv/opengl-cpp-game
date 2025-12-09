@@ -37,6 +37,8 @@ namespace Core {
 			Log("Failed to set font size! font name : ", m_FontSpecification.Name);
 			return false;
 		}
+
+		return true;
 	}
 
 	// <------------------ Public Functions ------------------>
@@ -46,10 +48,22 @@ namespace Core {
 			Log("Failed to set load char");
 			return false;
 		}
+
+		return true;
 	}
 
 	void Font::SetFontSize(int size) {
+		if (m_FontSpecification.Size == size)
+			return;
+
 		m_FontSpecification.Size = size;
+	}
+
+	void Font::SetFaceIndex(int index /*= 0*/) {
+		if (m_FontSpecification.FaceIndex == index)
+			return;
+
+		m_FontSpecification.FaceIndex = index;
 	}
 
 }

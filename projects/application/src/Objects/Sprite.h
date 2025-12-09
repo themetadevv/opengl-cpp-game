@@ -6,7 +6,7 @@ namespace Game {
 	struct SpriteData {
 		std::string Name;
 
-		OpenGL::Shader*    Shader;
+		OpenGL::Shader*    SpriteShader;
 		OpenGL::Texture2D* Texture;
 		OpenGL::IMesh*     Mesh;
 
@@ -14,7 +14,7 @@ namespace Game {
 		Transform2D Transform;
 		
 		SpriteData() :
-			Name("Defualt_Sprite"), Shader(nullptr),
+			Name(""), SpriteShader(nullptr),
 			Texture(nullptr), SpriteColor(),
 			Transform(), Mesh(nullptr)
 		{}
@@ -22,11 +22,10 @@ namespace Game {
 
 	class Sprite {
 	private:
-		OpenGL::Renderer* m_Renderer;
 		SpriteData m_SpriteData;
 
 	public:
-		Sprite(const std::string& name, OpenGL::Renderer* renderer);
+		Sprite(const std::string& name);
 
 		void ClearShader();
 		void ClearTexture();
@@ -40,8 +39,6 @@ namespace Game {
 		void SetPosition(const Vector2& position);
 		void SetRotation(const float& rot);
 		void SetColor(const Color& val);
-
-		void SetMVP(const Mat4& view, const Mat4& projection);
 
 		inline const Vector2& GetSize() const {
 			return m_SpriteData.Transform.Size;
@@ -60,8 +57,8 @@ namespace Game {
 		}
 
 		inline const OpenGL::Shader* GetBoundShader() const {
-			CORE_ASSERT(m_SpriteData.Shader, ("No! Shader was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
-			return m_SpriteData.Shader;
+			CORE_ASSERT(m_SpriteData.SpriteShader, ("No! Shader was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
+			return m_SpriteData.SpriteShader;
 		}
 
 		inline const OpenGL::Texture2D* GetBoundTexture() const {
@@ -73,7 +70,7 @@ namespace Game {
 			return m_SpriteData.Transform.GetModelMatrix();
 		}
 
-		void Draw();
+		void Draw(OpenGL::Renderer* m_Renderer);
 	};
 }
 

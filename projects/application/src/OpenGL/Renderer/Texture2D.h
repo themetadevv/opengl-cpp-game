@@ -53,7 +53,7 @@ namespace OpenGL {
 		const uint32_t  GetWidth() const { return m_TextureData.Width; }
 		const uint32_t  GetHeight() const { return  m_TextureData.Height; }
 
-		void SetData(void* data, uint32_t size) const;
+		void UploadTextureData(void* data, uint32_t size) const;
 		void OverrideBind(int texture_slot) const;
 	};
 }

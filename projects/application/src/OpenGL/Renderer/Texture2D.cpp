@@ -26,7 +26,7 @@ namespace OpenGL {
 
 	uint32_t TextureFormatToGLDataFormat(TextureFormat texture_format) {
 		switch (texture_format) {
-			case TextureFormat::R: return GL_R;
+			case TextureFormat::R: return GL_RED;
 			case TextureFormat::RG: return GL_RG;
 			case TextureFormat::RGB: return GL_RGB;
 			case TextureFormat::RGBA: return GL_RGBA;
@@ -51,7 +51,7 @@ namespace OpenGL {
 		int width = 0, height = 0;
 		int number_of_channels = 0;
 
-		m_ImageBuffer = stbi_load(texture_image_path.c_str(), &width, &height, &number_of_channels, 0);
+		m_ImageBuffer = stbi_load(m_TextureData.Path.c_str(), &width, &height, &number_of_channels, 0);
 		CORE_ASSERT(m_ImageBuffer, "Image Buffer* is null!");
 		
 		if (m_ImageBuffer != nullptr) {
@@ -97,7 +97,6 @@ namespace OpenGL {
 		m_DataFormat = TextureFormatToGLDataFormat(texture_data.TexFormat);
 
 		CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not Supported!");
-
 		GLCall(glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID));
 		GLCall(glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_TextureData.Width, m_TextureData.Height));
 		GLCall(glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
@@ -106,7 +105,7 @@ namespace OpenGL {
 		GLCall(glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT));
 	}
 
-	void Texture2D::SetData(void* data, uint32_t size) const {
+	void Texture2D::UploadTextureData(void* data, uint32_t size) const {
 		uint32_t bpp = 0;
 		if (m_DataFormat == TextureFormatToGLDataFormat(TextureFormat::RGBA))
 			bpp = 4;

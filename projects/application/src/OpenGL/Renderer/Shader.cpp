@@ -6,7 +6,7 @@
 #include "Shader.h"
 
 namespace OpenGL {
-	Shader::Shader(const std::string& shader_name, const std::string& shader_path) : m_RendererID(NULL) {
+	Shader::Shader(const std::string& shader_name, const std::string& shader_path) : m_RendererID(NULL), m_ShaderBound(false) {
 		CORE_ASSERT(ParseShader(shader_name, shader_path), ("Failed to parse shader : " + shader_name + ", " + shader_path).c_str());
 		CORE_ASSERT(CompileShader(), "Failed to compile shader!");
 	}
@@ -117,12 +117,15 @@ namespace OpenGL {
 		return uniform_location;
 	}
 
-	void Shader::Bind() const {
+	void Shader::Bind() {
 		GLCall(glUseProgram(m_RendererID));
 	}
 
-	void Shader::Unbind() const {
-		GLCall(glUseProgram(NULL));
+	void Shader::Unbind() {
+		if (m_ShaderBound) {
+			GLCall(glUseProgram(NULL));
+			m_ShaderBound = false;
+		}
 	}
 
 	void Shader::SetUniform1i(const std::string& name, int value) {

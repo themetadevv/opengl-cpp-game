@@ -40,11 +40,12 @@ namespace OpenGL {
 	void Renderer::DrawArray(Buffer::VertexArray* vao) {
 		vao->Bind();
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
+		vao->Unbind();
 	}
 
 	void Renderer::DrawIndexed(Buffer::VertexArray* vao, Buffer::IndexBuffer* ibo) {
 		vao->Bind();
 		GLCall(glDrawElements(GL_TRIANGLES, ibo->GetIndicesCount(), GL_UNSIGNED_INT, nullptr));
+		vao->Unbind();
 	}
-
 }

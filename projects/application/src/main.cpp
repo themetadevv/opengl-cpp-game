@@ -6,13 +6,13 @@
 #include "Core/Time.h"
 #include "Core/Input.h"
 
-#include "Game/Level.h"
-#include "Game/Sprite.h"
-#include "Game/Resource.h"
+#include "Objects/Sprite.h"
+#include "Objects/Resource.h"
+
+#include "OpenGL/UI/FontAtlas.h"
+#include "Objects/Text.h"
 
 #include "Core/Font.h"
-
-#include <free_type.h>
 
 // test program
 int main() {
@@ -20,24 +20,39 @@ int main() {
 
 	Core::FontSpecification font_spec;
 	font_spec.Name = "Arial";
-	font_spec.Path = "assets/arial.ttf";
+	font_spec.Path = "assets/Roboto-Black.ttf";
 	font_spec.FaceIndex = 0;
-	font_spec.Size = 48;
+	font_spec.Size = 28;
 
 	Core::Font* font = new Core::Font(font_spec);
+
+	std::cout << "m_FTLibrary: " << font->GetLibrary() << std::endl;
+	std::cout << "m_Face: " << font->GetFace() << std::endl;
+
 
 	Core::WindowSpecification Specs;
 	Specs.Title = "Platform - " + std::string(PLATFORM) + " API - OpenGL\n";
 	Specs.Size.first = 1600;
 	Specs.Size.second = 900;
 	Specs.VidMode = Core::VideoMode::Windowed;
-	Specs.WinState = Core::WindowState::Maximized | Core::WindowState::Minimized | Core::WindowState::InputFocused;
-	Specs.VSync = true;
-
-	std::cout << (uint32_t)Specs.WinState << '\n';
+	Specs.WinState = Core::WindowState::Maximized | Core::WindowState::InputFocused;
+	Specs.VSync = false;
 
 	Core::Window* window = new Core::Window(Specs);
 	Renderer* renderer = new Renderer();
+
+	FontAtlas* font_atlas_test = new FontAtlas("TextAtlas", font);
+
+	Log("Width : ", font_atlas_test->GetWidth());
+	Log("Height : ", font_atlas_test->GetHeight());
+
+	Shader* text_shader = new Shader("TextShader.GLSL", "assets/TextShader.GLSL");
+
+	Objects::UI::TextRendererData tex_data;
+	tex_data.TextFontAtlas = font_atlas_test;
+	tex_data.TextShader = text_shader;
+
+	Objects::UI::TextRenderer* text_renderer = new Objects::UI::TextRenderer(tex_data, renderer);
 
 	renderer->SetViewport(window->GetWindowHandle());
 
@@ -50,7 +65,7 @@ int main() {
 	Shader* mesh_shader = new Shader("MeshShader.GLSL", "assets/MeshShader.GLSL");
 
 	Texture2D* bird_texture = new Texture2D("BirdTexture", "assets/bird.png");
-	Game::Sprite* bird_sprite = new Game::Sprite("Bird", renderer);
+	Game::Sprite* bird_sprite = new Game::Sprite("Bird");
 
 	Mat4 view_matrix(1.0f);
 	view_matrix = glm::translate(view_matrix, Vector3(300.0f, 150.0f, 0.0f));
@@ -70,6 +85,15 @@ int main() {
 
 	bird_sprite->SetSize({ 50.0f,50.0f });
 	Vector2 cursor_pos(1.0f);
+
+	renderer->SetProjectionMatrix(projection_matrix);
+	renderer->SetViewMatrix(view_matrix);
+
+	Transform2D t;
+	t.Size = { 1.0f , 0.0f };
+	t.Position = { 100.0f, 450.0f };
+	t.Rotation = 10.0f;
+
 
 	while (window->Running()) {
 		renderer->Clear({ 0.3f,0.2f,0.3f,1.0f });
@@ -115,7 +139,9 @@ int main() {
 			window->SetVideoMode(Core::VideoMode::Windowed);
 		}
 
-	//	Log("Width , Height : ", window->GetWindowSize().first, ", ", window->GetWindowSize().second);
+		text_renderer->DrawText("FPS:" + std::to_string(Core::Time::GetFPS()), {100.0f, 450.0f}, 1.0f, Color(255, 0, 0));
+		text_renderer->DrawText("Elapsed:" + std::to_string(Core::Time::GetElapsedTime()), {100.0f, 500.0f}, 1.0f, Color(0, 255, 0));
+		text_renderer->DrawText("Delta:" + std::to_string(Core::Time::GetDeltaTime()), {100.0f, 550.0f}, 1.0f, Color(0, 0, 100));
 
 		birdVelocity += gravity * Core::Time::GetDeltaTime();
 		birdpos.y += birdVelocity * Core::Time::GetDeltaTime();
@@ -123,14 +149,13 @@ int main() {
 		// draw
 		bird_sprite->SetPosition(birdpos);
 		bird_sprite->SetColor(sprite_color);
-		bird_sprite->SetMVP(view_matrix, projection_matrix);
 
 		float right = bird_sprite->GetPosition().x + bird_sprite->GetSize().x;
 		float left = bird_sprite->GetPosition().x;
 		float bottom = bird_sprite->GetPosition().y;
 		float top = bird_sprite->GetPosition().y + bird_sprite->GetSize().y;
 
-		bird_sprite->Draw();
+		bird_sprite->Draw(renderer);
 
 		Core::Input::Update();
 		Core::Time::Update();
@@ -144,4 +169,6 @@ int main() {
 	delete mesh_shader;
 	delete bird_texture;
 	delete bird_sprite;
+	delete font;
+	delete font_atlas_test;
 }

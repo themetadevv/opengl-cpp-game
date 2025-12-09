@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Core/Font.h"
+
 namespace OpenGL {
-	struct Character {
-		glm::vec2 uvMin;
-		glm::vec2 uvMax;
+	struct Glyph {
+		Vector2 uvMin;
+		Vector2 uvMax;
 		uint32_t Width;
 		uint32_t Height;
 		uint32_t BearingX;
@@ -21,7 +23,8 @@ namespace OpenGL {
 		uint32_t m_AtlasWidth;
 		uint32_t m_AtlasHeight;
 
-		std::unordered_map<char, Character> m_CharacterCollection;
+		OpenGL::Texture2D* m_GlyphTexture;
+		std::unordered_map<char, Glyph> m_GlyphsCollection;
 
 	public:
 		// <------------------ Constructors/Deconstructor ------------------>
@@ -39,7 +42,18 @@ namespace OpenGL {
 		// <------------------ Getters ------------------>
 
 		std::string GetAtlasName() const { return m_Name; }
-		std::string GetAtlasFontName() const { m_Font->GetFontName(); }
+		std::string GetAtlasFontName() const { return m_Font->GetFontName(); }
+
+		const Glyph& GetGlyph(char c) const { return m_GlyphsCollection.at(c); }
+		Texture2D* GetGlyphTexture() const { return m_GlyphTexture; }
+
+		uint32_t GetWidth() {
+			return m_AtlasWidth;
+		}
+
+		uint32_t GetHeight() {
+			return m_AtlasHeight;
+		}
 
 	private:
 		// <------------------ Private Functions ------------------>
