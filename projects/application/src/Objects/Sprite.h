@@ -27,10 +27,6 @@ namespace Game {
 	public:
 		Sprite(const std::string& name);
 
-		void ClearShader();
-		void ClearTexture();
-		void ClearMesh();
-
 		bool SetShader(OpenGL::Shader* shader);
 		bool SetTexture(OpenGL::Texture2D* texture);
 		bool SetMesh(OpenGL::IMesh* mesh);

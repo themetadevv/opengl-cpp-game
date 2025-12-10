@@ -161,4 +161,23 @@ namespace Core {
 		glfwSetWindowShouldClose(m_WindowHandle, true);
 		m_Running = false;
 	}
+
+	std::string Window::GetVideoModeString(VideoMode vm) {
+		switch (vm)
+		{
+		case Core::VideoMode::None:
+			return "None";
+			break;
+		case Core::VideoMode::Windowed:
+			return "Windowed";
+			break;
+		case Core::VideoMode::Borderless:
+			return "Borderless";
+			break;
+		case Core::VideoMode::Fullscreen:
+			return "Fullscreen";
+			break;
+		}
+	}
+
 }

@@ -9,25 +9,17 @@ namespace Core {
 	// <------------------ Constructors/Deconstructor ------------------>
 
 	Font::Font(const FontSpecification& font_spec) :
-		m_FontSpecification(font_spec), m_FTLibrary(nullptr), m_Face(nullptr)
+		m_FontSpecification(font_spec), m_Face(nullptr) 
 	{
 		LoadFont();
 	}
 
-	Font::~Font() {
-		FT_Done_Face(m_Face);
-		FT_Done_FreeType(m_FTLibrary);
-	}
+	Font::~Font() {}
 
 	// <------------------ Private Functions ------------------>
 
 	bool Font::LoadFont() {
-		if (FT_Init_FreeType(&m_FTLibrary)) {
-			Log("Failed to init freetype library!");
-			return false;
-		}
-			
-		if (FT_New_Face(m_FTLibrary, m_FontSpecification.Path.c_str(), m_FontSpecification.FaceIndex, &m_Face)) {
+		if (FT_New_Face(FreeTypeLibrary::GetLibrary(), m_FontSpecification.Path.c_str(), m_FontSpecification.FaceIndex, &m_Face)) {
 			Log("Failed to create font face! font name : ", m_FontSpecification.Name);
 			return false;
 		}

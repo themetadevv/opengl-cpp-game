@@ -1,6 +1,6 @@
 #pragma once
 
-#include <free_type.h>
+#include "FontLibraries.h"
 
 // too basic font system
 
@@ -27,7 +27,6 @@ namespace Core {
 		FontSpecification m_FontSpecification;
 		FontStyle m_CurrentFontStyle;
 
-		FT_Library m_FTLibrary;
 		FT_Face m_Face;
 
 	public:
@@ -53,10 +52,6 @@ namespace Core {
 		
 
 		// <------------------ Getters ------------------>
-
-		FT_Library GetLibrary() {
-			return m_FTLibrary;
-		}
 
 		std::string GetFontName() const { return m_FontSpecification.Name; }
 		std::string GetFontPath() const { return m_FontSpecification.Path; }

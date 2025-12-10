@@ -3,7 +3,10 @@
 #include "Core/Font.h"
 
 namespace OpenGL {
-	struct Glyph {
+
+	constexpr static unsigned int MAX_ATLAS_WIDTH = 256;
+
+	struct Character {
 		Vector2 uvMin;
 		Vector2 uvMax;
 		uint32_t Width;
@@ -20,11 +23,11 @@ namespace OpenGL {
 		// FontAtlas Specifications
 		std::string m_Name;
 		Core::Font* m_Font;
-		uint32_t m_AtlasWidth;
-		uint32_t m_AtlasHeight;
 
-		OpenGL::Texture2D* m_GlyphTexture;
-		std::unordered_map<char, Glyph> m_GlyphsCollection;
+		std::pair<uint32_t, uint32_t> m_AtlasDimension;
+
+		std::unique_ptr<OpenGL::Texture2D> m_CharactersTexture;
+		std::unordered_map<char, Character> m_CharactersData;
 
 	public:
 		// <------------------ Constructors/Deconstructor ------------------>
@@ -37,28 +40,20 @@ namespace OpenGL {
 
 		// <------------------ Setters ------------------>
 
-		void SetFont(Core::Font* font);
-
 		// <------------------ Getters ------------------>
 
 		std::string GetAtlasName() const { return m_Name; }
 		std::string GetAtlasFontName() const { return m_Font->GetFontName(); }
 
-		const Glyph& GetGlyph(char c) const { return m_GlyphsCollection.at(c); }
-		Texture2D* GetGlyphTexture() const { return m_GlyphTexture; }
+		const Character& GetCharacterData(char c) const { return m_CharactersData.at(c); }
+		Texture2D* GetCharacterTexture() const { return m_CharactersTexture.get(); }
 
-		uint32_t GetWidth() {
-			return m_AtlasWidth;
-		}
+		std::pair<uint32_t, uint32_t> GetAtlasDimension() const { return m_AtlasDimension; }
 
-		uint32_t GetHeight() {
-			return m_AtlasHeight;
-		}
-
-	private:
+	public:
 		// <------------------ Private Functions ------------------>
 
-		// ts made me cry
+		// ts made me cry, should not be called in a loop (this func is heavy asf)
 		void UploadAtlasData();
 	};
 }

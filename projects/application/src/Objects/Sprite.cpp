@@ -10,18 +10,6 @@ namespace Game {
 		m_SpriteData.Name = name;
 	}
 
-	void Sprite::ClearShader() {
-		m_SpriteData.SpriteShader = nullptr;
-	}
-
-	void Sprite::ClearTexture() {
-		m_SpriteData.Texture = nullptr;
-	}
-
-	void Sprite::ClearMesh() {
-		m_SpriteData.Mesh = nullptr;
-	}
-
 	bool Sprite::SetShader(OpenGL::Shader* shader) {
 		if (m_SpriteData.SpriteShader != shader) {
 			m_SpriteData.SpriteShader = shader;

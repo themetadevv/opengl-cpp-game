@@ -85,6 +85,7 @@ namespace Core {
 		// Window Enum
 		inline VideoMode   GetCurrentVideoMode() const { return m_CurrentVideoMode; }
 		inline WindowState GetCurrentWindowState() const { return m_CurrentWindowState; }
+		inline std::string GetCurrentVideoModeString() { return GetVideoModeString(m_CurrentVideoMode); }
 
 		// Window Pointers
 		inline GLFWwindow* GetWindowHandle() const { return m_WindowHandle; }
@@ -93,10 +94,13 @@ namespace Core {
 			return m_Running;
 		}
 
-	public:
 		// <------------------ Functions ------------------>
 
 		void Update();
 		void Shutdown();
+
+	private:
+		std::string GetVideoModeString(VideoMode vm);
+
 	};
 }

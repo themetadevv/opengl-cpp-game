@@ -14,14 +14,15 @@ namespace OpenGL::Objects::UI {
 		m_TextRendererData(text_renderer_data), m_Renderer(renderer)
 	{
 		constexpr size_t MAX_CHARACTERS = 1024;
+
+		vbl.Push<float>(2); // position
+		vbl.Push<float>(2); // tex_coords
+
 		m_VAO = unique(Buffer::VertexArray);
 		m_VBO = unique(Buffer::VertexBuffer, sizeof(TextVertex) * MAX_CHARACTERS * 6, nullptr);
 	
-
 		m_VAO->Bind();
-		
-		vbl.Push<float>(2); // position
-		vbl.Push<float>(2); // tex_coords
+
 		m_VAO->AddDataToBuffer(*m_VBO, vbl);
 		m_VAO->Unbind();
 		m_VBO->Unbind();
@@ -31,17 +32,11 @@ namespace OpenGL::Objects::UI {
 
 	}
 
-	bool TextRenderer::SetFontAtlas(FontAtlas* font_atlas) {
-		if (m_TextRendererData.TextFontAtlas != font_atlas) {
-			if (font_atlas == nullptr) {
-				Log("FontAtlas* Set was null! shader name : ");
-				return false;
-			}
+	void TextRenderer::SetFontAtlas(FontAtlas* font_atlas) {
+		if (m_TextRendererData.TextFontAtlas == font_atlas)
+			return;
 
-			m_TextRendererData.TextFontAtlas = font_atlas;
-		}
-
-		return true;
+		m_TextRendererData.TextFontAtlas = font_atlas;
 	}
 
 	bool TextRenderer::SetShader(Shader* shader) {
@@ -57,7 +52,7 @@ namespace OpenGL::Objects::UI {
 		return true;
 	}
 
-	bool TextRenderer::DrawText(const std::string& text /*= "SampleText"*/, std::pair<float , float> position, float scale, const Color& text_color) {
+	bool TextRenderer::DrawText(const std::string& text, std::pair<float , float> position, float scale, const Color& text_color) {
 		if (m_TextRendererData.TextShader == nullptr) {
 			Log("Text Shader* is null");
 			return false;
@@ -70,7 +65,7 @@ namespace OpenGL::Objects::UI {
 
 		std::vector<TextVertex> text_vertices;
 		for (unsigned char c : text) {
-			const Glyph& g = m_TextRendererData.TextFontAtlas->GetGlyph(c);
+			const Character& g = m_TextRendererData.TextFontAtlas->GetCharacterData(c);
 
 			float xpos = (position.first + g.BearingX) * scale;
 			float ypos = (position.second - (g.Height - g.BearingY)) * scale;
@@ -88,12 +83,13 @@ namespace OpenGL::Objects::UI {
 			position.first += g.Advance * scale;
 		}
 
-		m_TextRendererData.TextFontAtlas->GetGlyphTexture()->OverrideBind(0);
+		m_TextRendererData.TextFontAtlas->GetCharacterTexture()->OverrideBind(0);
 		m_VAO->Bind();
 		m_VBO->Bind();
 		m_VBO->UpdateBufferData(text_vertices.size() * sizeof(TextVertex), text_vertices.data());
 
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, text_vertices.size()));
+		//m_Renderer->DrawArray(m_VAO.get());
 
 		m_VBO->Unbind();
 		m_VAO->Unbind();
@@ -101,5 +97,7 @@ namespace OpenGL::Objects::UI {
 		m_TextRendererData.TextShader->Unbind();
 		return true;
 	}
+
+
 
 }
